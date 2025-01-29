@@ -1778,19 +1778,23 @@ int GfMain(int argc, char **argv) {
 	ui.theme = uiThemeDark;
 
 #ifdef UI_FREETYPE
-	if (!fontPath) {
-		// Ask fontconfig for a monospaced font. If this fails, the fallback font will be used.
+	if (!fontPath)
+	{
+	    /* It doesn't work. idk why :(*/
+	    
+	    // Ask fontconfig for a monospaced font. If this fails, the fallback font will be used.
+	    /*
 		FILE *f = popen("fc-list | grep -F `fc-match mono | awk '{ print($1) }'` "
-				"| awk 'BEGIN { FS = \":\" } ; { print($1) }'", "r");
-
-		if (f) {
-			char *buffer = (char *) malloc(PATH_MAX + 1);
+				"| awk 'BEGIN { FS = \":\" } ; { print($1) }'", "r");		if (f) {
+			char *buffer = (char *) malloc(_MAX + 1);
 			buffer[fread(buffer, 1, PATH_MAX, f)] = 0;
 			pclose(f);
 			char *newline = strchr(buffer, '\n');
 			if (newline) *newline = 0;
-			fontPath = buffer;
-		}
+	    */
+
+	    // fix the font problem
+	    fontPath = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf";	
 	}
 #endif
 
