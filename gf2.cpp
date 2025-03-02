@@ -161,6 +161,7 @@ struct ReceiveMessageType {
 FILE *commandLog;
 char emptyString;
 bool programRunning = true;
+// TODO
 const char *vimServerName = "GVIM";
 const char *logPipePath;
 const char *controlPipePath;
@@ -1050,6 +1051,7 @@ void CommandPause(void *) {
 	kill(gdbPID, SIGINT);
 }
 
+// TODO Remove this pathetic function
 void CommandSyncWithGvim(void *) {
 	char buffer[1024];
 	StringFormat(buffer, sizeof(buffer), "vim --servername %s --remote-expr \"execute(\\\"ls\\\")\" | grep %%", vimServerName);
@@ -1530,7 +1532,7 @@ void InterfaceAddBuiltinWindowsAndCommands() {
 	interfaceCommands.Add({ .label = "Toggle breakpoint\tF9",
 			{ .code = UI_KEYCODE_FKEY(9), .invoke = CommandToggleBreakpoint } });
 	interfaceCommands.Add({ .label = "Sync with gvim\tF2",
-			{ .code = UI_KEYCODE_FKEY(2), .invoke = CommandSyncWithGvim } });
+				{ .code = UI_KEYCODE_FKEY(2), .invoke = CommandSyncWithGvim } }); // TODO
 	interfaceCommands.Add({ .label = "Ask GDB for PWD\tCtrl+Shift+P",
 			{ .code = UI_KEYCODE_LETTER('P'), .ctrl = true, .shift = true, .invoke = CommandSendToGDB, .cp = (void *) "gf-get-pwd" } });
 	interfaceCommands.Add({ .label = "Toggle disassembly\tCtrl+D",
@@ -1778,23 +1780,19 @@ int GfMain(int argc, char **argv) {
 	ui.theme = uiThemeDark;
 
 #ifdef UI_FREETYPE
-	if (!fontPath)
-	{
-	    /* It doesn't work. idk why :(*/
-	    
-	    // Ask fontconfig for a monospaced font. If this fails, the fallback font will be used.
-	    /*
-		FILE *f = popen("fc-list | grep -F `fc-match mono | awk '{ print($1) }'` "
-				"| awk 'BEGIN { FS = \":\" } ; { print($1) }'", "r");		if (f) {
-			char *buffer = (char *) malloc(_MAX + 1);
+	if (!fontPath) {
+		// Ask fontconfig for a monospaced font. If this fails, the fallback font will be used.
+		FILE *f = popen("fc-list | grep -F `fc-match iosevka | awk '{ print($1) }'` "
+				"| awk 'BEGIN { FS = \":\" } ; { print($1) }'", "r");
+
+		if (f) {
+			char *buffer = (char *) malloc(PATH_MAX + 1);
 			buffer[fread(buffer, 1, PATH_MAX, f)] = 0;
 			pclose(f);
 			char *newline = strchr(buffer, '\n');
 			if (newline) *newline = 0;
-	    */
-
-	    // fix the font problem
-	    fontPath = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf";	
+			fontPath = buffer;
+		}
 	}
 #endif
 
@@ -1822,6 +1820,7 @@ int GfMain(int argc, char **argv) {
 	pthread_cond_init(&evaluateEvent, nullptr);
 	pthread_mutex_init(&evaluateMutex, nullptr);
 	DebuggerStartThread();
+	// TODO
 	CommandSyncWithGvim(nullptr);
 	return 0;
 }
